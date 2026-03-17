@@ -99,7 +99,7 @@ export function FloatingLabels() {
   const branchCenters = useBranchCenters(nodes);
 
   const showClusterLabels = zoom < 0.9;
-  const showBranchLabels = zoom > 0.45 && zoom < 1.3;
+  const showBranchLabels = zoom > 0.25 && zoom < 1.3;
 
   // Opacity ramps to keep labels feeling like background wayfinding
   const clusterBaseOpacity = 0.6; // 50–60% effective at peak
@@ -117,10 +117,12 @@ export function FloatingLabels() {
   }
   const clusterOpacity = showClusterLabels ? clusterBaseOpacity * clusterFade : 0;
 
-  // Branch labels: fade in 0.45–0.6, solid 0.6–1.2, fade out 1.2–1.3
+  // Branch labels: faint at 0.25, ramp to full by 0.6, hold to 1.2, fade out 1.2–1.3
   let branchFade = 0;
-  if (zoom >= 0.45 && zoom < 0.6) {
-    branchFade = clamp01((zoom - 0.45) / 0.15);
+  if (zoom >= 0.25 && zoom < 0.6) {
+    // Start around 30% strength at 0.25, ease up to 100% by 0.6
+    const t = clamp01((zoom - 0.25) / (0.6 - 0.25));
+    branchFade = 0.3 + t * 0.7;
   } else if (zoom >= 0.6 && zoom <= 1.2) {
     branchFade = 1;
   } else if (zoom > 1.2 && zoom < 1.3) {
