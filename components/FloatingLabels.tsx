@@ -99,11 +99,12 @@ export function FloatingLabels() {
   const branchCenters = useBranchCenters(nodes);
 
   const showClusterLabels = zoom < 0.9;
-  const showBranchLabels = zoom > 0.25 && zoom < 1.3;
+  // Branch labels are present from the minimum zoom onward
+  const showBranchLabels = zoom < 1.3;
 
   // Opacity ramps to keep labels feeling like background wayfinding
   const clusterBaseOpacity = 0.6; // 50–60% effective at peak
-  const branchBaseOpacity = 0.7; // 60–70% effective at peak
+  const branchBaseOpacity = 0.8; // 75–80% effective at peak
   const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
 
   // Cluster labels: strong <=0.4, fade to 0 by 0.8
@@ -117,12 +118,12 @@ export function FloatingLabels() {
   }
   const clusterOpacity = showClusterLabels ? clusterBaseOpacity * clusterFade : 0;
 
-  // Branch labels: faint at 0.25, ramp to full by 0.6, hold to 1.2, fade out 1.2–1.3
+  // Branch labels: 40% at 0.2, ramp to full by 0.6, hold to 1.2, fade out 1.2–1.3
   let branchFade = 0;
-  if (zoom >= 0.25 && zoom < 0.6) {
-    // Start around 30% strength at 0.25, ease up to 100% by 0.6
-    const t = clamp01((zoom - 0.25) / (0.6 - 0.25));
-    branchFade = 0.3 + t * 0.7;
+  if (zoom >= 0.2 && zoom < 0.6) {
+    // 0.2 → 0.6: go from 0.5 strength (40% of base) to 1.0
+    const t = clamp01((zoom - 0.2) / (0.6 - 0.2));
+    branchFade = 0.5 + t * 0.5;
   } else if (zoom >= 0.6 && zoom <= 1.2) {
     branchFade = 1;
   } else if (zoom > 1.2 && zoom < 1.3) {
@@ -130,13 +131,8 @@ export function FloatingLabels() {
   } else {
     branchFade = 0;
   }
-  // When cluster (topic) labels are visible, keep branch labels present
-  // but visually subordinate. Once we leave the topic band, branches get
-  // full strength (subject to their own fade curve).
-  const branchOverlapScale = showClusterLabels ? 0.7 : 1;
-
   const branchOpacity = showBranchLabels
-    ? branchBaseOpacity * branchFade * branchOverlapScale
+    ? branchBaseOpacity * branchFade
     : 0;
 
   if (!showClusterLabels && !showBranchLabels) {
@@ -200,7 +196,14 @@ export function FloatingLabels() {
                 top: y,
                 transform: "translate(-50%, -50%)",
                 color,
-                fontSize: 17,
+                // Font size: 9px at zoom 0.2, scale smoothly to 14px at 0.6,
+                // then stay at 14px until 1.2.
+                fontSize:
+                  zoom <= 0.2
+                    ? 9
+                    : zoom < 0.6
+                    ? 9 + (14 - 9) * clamp01((zoom - 0.2) / (0.6 - 0.2))
+                    : 14,
                 fontWeight: 500,
                 textShadow:
                   "0 0 10px rgba(0,0,0,0.7), 0 0 1px rgba(0,0,0,0.9)",
