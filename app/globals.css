@@ -1,0 +1,82 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #0a0b0f;
+  --bg-card: #12131a;
+  --text: #e8e6e1;
+  --text-muted: #9b98a0;
+  --text-dim: #605e66;
+  --accent-mint: #6ee7b7;
+  --glow: rgba(110, 231, 183, 0.15);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* React Flow overrides */
+.react-flow__attribution {
+  display: none;
+}
+
+.react-flow__pane {
+  cursor: grab;
+}
+.react-flow__pane:active {
+  cursor: grabbing;
+}
+
+.react-flow__edge-path {
+  stroke-width: 1;
+  stroke: rgba(255, 255, 255, 0.08);
+  transition: stroke-opacity 0.3s ease;
+}
+
+.react-flow__edge.selected .react-flow__edge-path,
+.react-flow__edge:hover .react-flow__edge-path {
+  stroke: rgba(110, 231, 183, 0.25);
+}
+
+.react-flow__controls {
+  opacity: 0.8;
+}
+
+.react-flow__minimap {
+  background: var(--bg-card) !important;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.react-flow__node:hover {
+  z-index: 10 !important;
+}
+
+@keyframes idea-node-breathe {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.005);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.idea-node-breathe {
+  animation-name: idea-node-breathe;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+}
